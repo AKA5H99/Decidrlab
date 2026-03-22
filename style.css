@@ -1,0 +1,88 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #38bdf8;
+}
+
+.section {
+  background: #1e293b;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 12px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 6px;
+}
+
+textarea {
+  min-height: 80px;
+}
+
+.option {
+  background: #0f172a;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+}
+
+.option h3 {
+  margin-top: 0;
+}
+
+.list {
+  margin-top: 10px;
+}
+
+.list li {
+  display: flex;
+  gap: 5px;
+  margin: 5px 0;
+}
+
+.list input {
+  flex: 1;
+}
+
+button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #38bdf8;
+  border: none;
+  color: black;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0ea5e9;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+}
+
+#result {
+  margin-top: 20px;
+  white-space: pre-line;
+}
