@@ -89,8 +89,8 @@ function initDecisionPage() {
   const addOptionBtn = document.getElementById("addOptionBtn");
   if (addOptionBtn) addOptionBtn.onclick = openNewOptionModal;
 
-  const refreshSummaryBtn = document.getElementById("refreshSummaryBtn");
-  if (refreshSummaryBtn) refreshSummaryBtn.onclick = updateSummary;
+  const downloadSummaryBtn = document.getElementById("downloadSummaryBtn");
+  if (downloadSummaryBtn) downloadSummaryBtn.onclick = downloadSummaryImage;
 
   const existing = currentDecisionId
     ? getDecisions().find((d) => d.id === currentDecisionId)
@@ -637,6 +637,21 @@ function updateSummary() {
 }
 
 // -------- Utilities --------
+async function downloadSummaryImage() {
+  updateSummary();
+  const target = document.getElementById("summarySection") || document.getElementById("summaryChoices");
+  if (!target) return;
+  if (typeof html2canvas !== "function") {
+    alert("Download requires html2canvas. Please check your connection.");
+    return;
+  }
+  const canvas = await html2canvas(target, { backgroundColor: "#0a0f1c" });
+  const link = document.createElement("a");
+  link.download = "decision-summary.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
 function autoResizeTextarea(el) {
   if (!el) return;
   el.style.height = "auto";

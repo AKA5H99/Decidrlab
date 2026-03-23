@@ -29,14 +29,14 @@
     <button id="addOptionBtn" type="button">+ Add Option</button>
   </div>
 
-  <div class="section">
+  <div class="section" id="summarySection">
     <h2>Summary</h2>
     <p class="muted">Decision and choices laid out for quick review.</p>
     <h3 id="summaryDecisionTitle" class="summary-decision-title">Decision will appear here</h3>
     <div id="summaryChoices" class="summary-choices">
       <p class="muted">Nothing to show yet.</p>
     </div>
-    <button id="refreshSummaryBtn" type="button" class="ghost">Refresh Summary</button>
+    <button id="downloadSummaryBtn" type="button" class="ghost">Download Summary</button>
   </div>
 
   <div class="section">
@@ -67,6 +67,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
