@@ -273,6 +273,11 @@ function addOption(prefill = {}) {
 function addPoint(button, type) {
   const option = button.parentElement;
   const list = option.querySelector("." + type);
+  const lastInput = list.querySelector("li:last-child input");
+  if (lastInput && !lastInput.value.trim()) {
+    lastInput.focus();
+    return;
+  }
   list.appendChild(createPointLi(type));
   updateSummary();
   queueAutoSave();
@@ -534,7 +539,21 @@ function wireOptionListeners(optionDiv) {
 }
 
 function removeListItem(btn) {
-  btn.parentElement.remove();
+  const li = btn.parentElement;
+  const list = li.parentElement;
+  li.remove();
+
+  // If both pros & cons lists are empty and title is blank, remove the option card.
+  const option = list.closest(".option");
+  if (option) {
+    const prosEmpty = option.querySelectorAll(".pros li").length === 0;
+    const consEmpty = option.querySelectorAll(".cons li").length === 0;
+    const titleEmpty = !option.querySelector(".option-title")?.value.trim();
+    if (prosEmpty && consEmpty && titleEmpty) {
+      option.remove();
+    }
+  }
+
   updateSummary();
   queueAutoSave();
 }
