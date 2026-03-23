@@ -216,18 +216,37 @@ function addOption(prefill = {}) {
   optionDiv.className = "option";
 
   optionDiv.innerHTML = `
-    <input placeholder="Option name (e.g. Leave Job)" class="option-title">
+    <input placeholder="Option title" class="option-title">
 
-    <h4>Pros</h4>
-    <ul class="list pros"></ul>
-    <button type="button" class="ghost" onclick="addPoint(this, 'pros')">+ Add Pro</button>
+    <div class="option-split">
+      <div class="option-col">
+        <div class="col-header">
+          <span class="col-title pros-title">Pros</span>
+        </div>
+        <div class="points pros-box">
+          <ul class="list pros" data-placeholder="Add Pros"></ul>
+          <button type="button" class="pill-btn" onclick="addPoint(this, 'pros')">+ Add Pros</button>
+        </div>
+      </div>
 
-    <h4>Cons</h4>
-    <ul class="list cons"></ul>
-    <button type="button" class="ghost" onclick="addPoint(this, 'cons')">+ Add Con</button>
+      <div class="col-divider">
+        <span>•</span>
+      </div>
 
-    <br>
-    <button type="button" class="delete-btn" onclick="removeOption(this)">Delete Option</button>
+      <div class="option-col">
+        <div class="col-header">
+          <span class="col-title cons-title">Cons</span>
+        </div>
+        <div class="points cons-box">
+          <ul class="list cons" data-placeholder="Add Cons"></ul>
+          <button type="button" class="pill-btn danger" onclick="addPoint(this, 'cons')">+ Add Cons</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="option-actions">
+      <button type="button" class="delete-btn ghost danger" onclick="removeOption(this)">Delete Option</button>
+    </div>
   `;
 
   container.appendChild(optionDiv);
@@ -364,6 +383,8 @@ function updateSummary() {
   const titleEl = document.getElementById("summaryDecisionTitle");
   if (!container || !titleEl) return;
 
+  updateDecisionPreview();
+
   const decisionTitle =
     document.getElementById("decision")?.value.trim() || "Decision";
   titleEl.textContent = decisionTitle;
@@ -426,6 +447,13 @@ function updateSummary() {
 }
 
 // -------- Utilities --------
+function updateDecisionPreview() {
+  const preview = document.getElementById("decisionPreview");
+  if (!preview) return;
+  const text = document.getElementById("decision")?.value.trim();
+  preview.textContent = text || "Your decision will appear here";
+}
+
 function formatDate(iso) {
   if (!iso) return "just now";
   const d = new Date(iso);
