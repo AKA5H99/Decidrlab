@@ -8,34 +8,19 @@
 <body>
 
 <div class="container">
+  <header class="header">
+    <div>
+      <p class="app-name">ThinkClear</p>
+      <h1>Decisions</h1>
+    </div>
+    <button id="newDecisionBtn">+ New Decision</button>
+  </header>
 
-  <h1>ThinkClear</h1>
-
-  <!-- Step 1 -->
   <div class="section">
-    <h2>Decision</h2>
-    <input type="text" id="decision" placeholder="What decision are you trying to make?">
+    <h2>Your decisions</h2>
+    <div id="decisionList" class="decision-list"></div>
+    <div id="emptyState" class="empty-state">No decisions yet. Click "New Decision" to start.</div>
   </div>
-
-  <!-- Step 2 -->
-  <div class="section">
-    <h2>Options</h2>
-    <div id="optionsContainer"></div>
-    <button onclick="addOption()">+ Add Option</button>
-  </div>
-
-  <!-- Step 3 -->
-  <div class="section">
-    <h2>Reflection</h2>
-    <textarea id="reflection" placeholder="What are you leaning towards and why?"></textarea>
-  </div>
-
-  <!-- Step 4 -->
-  <div class="section">
-    <button id="aiBtn">Get AI Suggestion</button>
-    <div id="result"></div>
-  </div>
-
 </div>
 
 <script src="script.js"></script>
