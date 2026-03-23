@@ -396,6 +396,11 @@ button:hover {
   font-size: 13px;
 }
 
+.modal .danger {
+  background: #ef4444;
+  color: #0b1221;
+}
+
 @media (max-width: 720px) {
   .header,
   .top-bar {

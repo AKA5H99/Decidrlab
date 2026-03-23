@@ -2,6 +2,7 @@ const STORAGE_KEY = "thinkclear-decisions";
 let currentDecisionId = null;
 let autoSaveTimer = null;
 const AUTO_SAVE_DELAY = 800;
+let pendingDeleteId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   initIndexPage();
@@ -17,6 +18,7 @@ function initIndexPage() {
   if (newBtn) newBtn.onclick = openNewDecisionModal;
 
   setupNewDecisionModal();
+  setupDeleteDecisionModal();
 
   renderDecisionList();
 }
@@ -64,12 +66,7 @@ function renderDecisionList() {
     btn.onclick = () => openDecision(btn.dataset.open);
   });
   listEl.querySelectorAll("[data-delete]").forEach((btn) => {
-    btn.onclick = () => {
-      if (confirm("Delete this decision?")) {
-        deleteDecision(btn.dataset.delete);
-        renderDecisionList();
-      }
-    };
+    btn.onclick = () => openDeleteDecisionModal(btn.dataset.delete);
   });
 }
 
@@ -347,6 +344,52 @@ function upsertDecision(item) {
 function deleteDecision(id) {
   const list = getDecisions().filter((d) => d.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+// Delete Decision modal --------
+function setupDeleteDecisionModal() {
+  const modal = document.getElementById("deleteDecisionModal");
+  if (!modal) return;
+
+  const titleEl = document.getElementById("deleteDecisionTitle");
+  const confirm = document.getElementById("confirmDeleteDecision");
+  const cancel = document.getElementById("cancelDeleteDecision");
+
+  const close = () => {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    pendingDeleteId = null;
+    if (titleEl) titleEl.textContent = "";
+  };
+
+  confirm.onclick = () => {
+    if (pendingDeleteId) {
+      deleteDecision(pendingDeleteId);
+      renderDecisionList();
+    }
+    close();
+  };
+
+  cancel.onclick = close;
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (modal.classList.contains("show") && e.key === "Escape") close();
+  });
+}
+
+function openDeleteDecisionModal(id) {
+  const modal = document.getElementById("deleteDecisionModal");
+  const titleEl = document.getElementById("deleteDecisionTitle");
+  if (!modal) return;
+  const decision = getDecisions().find((d) => d.id === id);
+  pendingDeleteId = id;
+  if (titleEl) {
+    titleEl.textContent = decision?.title || "Untitled decision";
+  }
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
 }
 
 function createNewDecision(title) {
