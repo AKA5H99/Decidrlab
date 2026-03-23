@@ -639,7 +639,7 @@ function updateSummary() {
 // -------- Utilities --------
 async function downloadSummaryImage() {
   updateSummary();
-  const target = document.getElementById("summarySection") || document.getElementById("summaryChoices");
+  const target = document.getElementById("summaryChoices");
   if (!target) return;
   if (typeof html2canvas !== "function") {
     alert("Download requires html2canvas. Please check your connection.");
