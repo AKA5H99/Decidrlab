@@ -80,6 +80,8 @@ function initDecisionPage() {
   const params = new URLSearchParams(window.location.search);
   let currentId = params.get("id");
 
+  setupTabs();
+
   const backBtn = document.getElementById("backBtn");
   if (backBtn) backBtn.onclick = () => (window.location.href = "index.html");
 
@@ -90,6 +92,9 @@ function initDecisionPage() {
   if (saveBtn) saveBtn.onclick = () => {
     currentId = saveDecision(currentId);
   };
+
+  const refreshSummaryBtn = document.getElementById("refreshSummaryBtn");
+  if (refreshSummaryBtn) refreshSummaryBtn.onclick = updateSummary;
 
   const existing = currentId
     ? getDecisions().find((d) => d.id === currentId)
@@ -102,6 +107,9 @@ function initDecisionPage() {
   }
 
   setupAiHandler();
+  decisionInput.addEventListener("input", updateSummary);
+  document.getElementById("reflection").addEventListener("input", updateSummary);
+  updateSummary();
 }
 
 function loadDecision(data) {
@@ -193,8 +201,10 @@ function createPointLi(type, value = "") {
   const li = document.createElement("li");
   li.innerHTML = `
     <input placeholder="${type}..." value="${value}">
-    <button type="button" onclick="this.parentElement.remove()">X</button>
+    <button type="button" onclick="removeListItem(this)">X</button>
   `;
+  const input = li.querySelector("input");
+  input.addEventListener("input", updateSummary);
   return li;
 }
 
@@ -217,7 +227,7 @@ function addOption(prefill = {}) {
     <button type="button" class="ghost" onclick="addPoint(this, 'cons')">+ Add Con</button>
 
     <br>
-    <button type="button" class="delete-btn" onclick="this.parentElement.remove()">Delete Option</button>
+    <button type="button" class="delete-btn" onclick="removeOption(this)">Delete Option</button>
   `;
 
   container.appendChild(optionDiv);
@@ -233,12 +243,16 @@ function addOption(prefill = {}) {
   (prefill.cons || []).forEach((text) =>
     consList.appendChild(createPointLi("cons", text))
   );
+
+  wireOptionListeners(optionDiv);
+  updateSummary();
 }
 
 function addPoint(button, type) {
   const option = button.parentElement;
   const list = option.querySelector("." + type);
   list.appendChild(createPointLi(type));
+  updateSummary();
 }
 
 // -------- Persistence --------
@@ -306,6 +320,78 @@ function deleteDecision(id) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
+// -------- Tabs & summary --------
+function setupTabs() {
+  const buttons = document.querySelectorAll(".tab-btn");
+  const panels = document.querySelectorAll(".tab-panel");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.tab;
+      buttons.forEach((b) => {
+        b.classList.toggle("active", b === btn);
+        b.setAttribute("aria-selected", b === btn);
+      });
+      panels.forEach((panel) => {
+        const isActive = panel.id === targetId;
+        panel.classList.toggle("active", isActive);
+        panel.setAttribute("aria-hidden", !isActive);
+      });
+      if (targetId === "summaryTab") updateSummary();
+    });
+  });
+}
+
+function wireOptionListeners(optionDiv) {
+  const titleInput = optionDiv.querySelector(".option-title");
+  if (titleInput) titleInput.addEventListener("input", updateSummary);
+  optionDiv.querySelectorAll("input").forEach((inp) => {
+    inp.addEventListener("input", updateSummary);
+  });
+}
+
+function removeListItem(btn) {
+  btn.parentElement.remove();
+  updateSummary();
+}
+
+function removeOption(btn) {
+  btn.parentElement.remove();
+  updateSummary();
+}
+
+function updateSummary() {
+  const tbody = document.getElementById("summaryBody");
+  if (!tbody) return;
+
+  const options = [...document.querySelectorAll(".option")].map((opt) => ({
+    title: opt.querySelector(".option-title")?.value.trim(),
+    pros: [...opt.querySelectorAll(".pros input")]
+      .map((i) => i.value.trim())
+      .filter(Boolean),
+    cons: [...opt.querySelectorAll(".cons input")]
+      .map((i) => i.value.trim())
+      .filter(Boolean),
+  }));
+
+  tbody.innerHTML = "";
+
+  if (!options.length) {
+    tbody.innerHTML =
+      '<tr><td colspan="3" class="muted">Nothing to show yet.</td></tr>';
+    return;
+  }
+
+  options.forEach((opt, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(opt.title || `Option ${idx + 1}`)}</td>
+      <td>${formatList(opt.pros)}</td>
+      <td>${formatList(opt.cons)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
 // -------- Utilities --------
 function formatDate(iso) {
   if (!iso) return "just now";
@@ -318,4 +404,9 @@ function escapeHtml(str) {
   return (str || "").replace(/[&<>\"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
   );
+}
+
+function formatList(arr) {
+  if (!arr || arr.length === 0) return '<span class="muted">-</span>';
+  return arr.map((i) => `<span class="pill">${escapeHtml(i)}</span>`).join(" ");
 }
