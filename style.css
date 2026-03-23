@@ -36,36 +36,6 @@ h1 {
   border-radius: 12px;
 }
 
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.tab-btn {
-  background: #0f172a;
-  border: 1px solid #334155;
-  color: #e2e8f0;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  flex: 1;
-  margin-top: 0;
-}
-
-.tab-btn.active {
-  border-color: #38bdf8;
-  color: #38bdf8;
-}
-
-.tab-panel {
-  display: none;
-}
-
-.tab-panel.active {
-  display: block;
-}
-
 input,
 textarea {
   width: 100%;

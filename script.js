@@ -80,8 +80,6 @@ function initDecisionPage() {
   const params = new URLSearchParams(window.location.search);
   let currentId = params.get("id");
 
-  setupTabs();
-
   const backBtn = document.getElementById("backBtn");
   if (backBtn) backBtn.onclick = () => (window.location.href = "index.html");
 
@@ -339,27 +337,7 @@ function deleteDecision(id) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
-// -------- Tabs & summary --------
-function setupTabs() {
-  const buttons = document.querySelectorAll(".tab-btn");
-  const panels = document.querySelectorAll(".tab-panel");
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const targetId = btn.dataset.tab;
-      buttons.forEach((b) => {
-        b.classList.toggle("active", b === btn);
-        b.setAttribute("aria-selected", b === btn);
-      });
-      panels.forEach((panel) => {
-        const isActive = panel.id === targetId;
-        panel.classList.toggle("active", isActive);
-        panel.setAttribute("aria-hidden", !isActive);
-      });
-      if (targetId === "summaryTab") updateSummary();
-    });
-  });
-}
-
+// -------- Summary --------
 function wireOptionListeners(optionDiv) {
   const titleInput = optionDiv.querySelector(".option-title");
   if (titleInput) titleInput.addEventListener("input", updateSummary);
