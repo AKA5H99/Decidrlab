@@ -27,12 +27,15 @@ body {
   max-width: 1100px;
   margin: auto;
   padding: 18px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 h1 {
   margin: 0;
   color: var(--accent);
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .header,
@@ -55,6 +58,7 @@ h1 {
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+  max-width: 100%;
 }
 
 input,
@@ -106,6 +110,8 @@ textarea {
   font-weight: 700;
   margin: 12px 0 0;
   font-size: 20px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .option {
@@ -129,6 +135,7 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .col-header {
@@ -178,14 +185,35 @@ textarea {
 
 .list li {
   display: flex;
+  align-items: flex-start;
   gap: 5px;
   margin: 5px 0;
   animation: slideIn 0.2s ease;
 }
 
+.list li button {
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+
 .list input {
   flex: 1;
   background: #0f172a;
+  min-width: 0;
+}
+.list textarea {
+  flex: 1;
+  background: #0f172a;
+  color: var(--text);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  min-height: 54px;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.4;
+  padding: 10px 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .col-divider {
@@ -301,6 +329,8 @@ button:hover {
   align-items: center;
   gap: 12px;
   box-shadow: var(--shadow);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .card-actions {
@@ -350,6 +380,8 @@ button:hover {
   text-align: center;
   font-size: 22px;
   margin: 10px 0 16px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .summary-choices {
@@ -364,16 +396,21 @@ button:hover {
   border-radius: 14px;
   padding: 12px;
   box-shadow: var(--shadow);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .choice-title {
   text-align: center;
   margin: 4px 0 12px;
   font-size: 18px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .summary-grid {
   width: 100%;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
   border: 1px solid var(--border);
@@ -387,6 +424,9 @@ button:hover {
   padding: 10px 12px;
   text-align: left;
   border: 1px solid var(--border);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  vertical-align: top;
 }
 
 .summary-grid th {
@@ -396,6 +436,12 @@ button:hover {
 
 .summary-grid tbody tr:hover {
   background: #172845;
+}
+
+.cell-text {
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 .modal-backdrop {
@@ -420,6 +466,7 @@ button:hover {
   border-radius: 16px;
   box-shadow: var(--shadow);
   padding: 18px;
+  box-sizing: border-box;
 }
 
 .modal h3 {

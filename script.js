@@ -3,6 +3,7 @@ let currentDecisionId = null;
 let autoSaveTimer = null;
 const AUTO_SAVE_DELAY = 800;
 let pendingDeleteId = null;
+const AUTO_RESIZE_PADDING = 2;
 
 document.addEventListener("DOMContentLoaded", () => {
   initIndexPage();
@@ -106,11 +107,14 @@ function initDecisionPage() {
     updateSummary();
     queueAutoSave();
   });
-  document.getElementById("reflection").addEventListener("input", () => {
+  const reflectionEl = document.getElementById("reflection");
+  reflectionEl.addEventListener("input", () => {
+    autoResizeTextarea(reflectionEl);
     updateSummary();
     queueAutoSave();
   });
   updateSummary();
+  autoResizeTextarea(reflectionEl);
 }
 
 function loadDecision(data) {
@@ -153,8 +157,8 @@ function setupAiHandler() {
 
     options.forEach((opt, index) => {
       const title = opt.querySelector(".option-title").value;
-      const pros = [...opt.querySelectorAll(".pros input")].map((i) => i.value);
-      const cons = [...opt.querySelectorAll(".cons input")].map((i) => i.value);
+      const pros = [...opt.querySelectorAll(".pros textarea")].map((i) => i.value);
+      const cons = [...opt.querySelectorAll(".cons textarea")].map((i) => i.value);
 
       optionsText += `
 Option ${index + 1}: ${title}
@@ -201,14 +205,16 @@ Analyze and suggest best option with reasoning, risks and long term thinking.
 function createPointLi(type, value = "") {
   const li = document.createElement("li");
   li.innerHTML = `
-    <input placeholder="${type}..." value="${value}">
+    <textarea placeholder="${type}..." rows="2">${value}</textarea>
     <button type="button" onclick="removeListItem(this)">X</button>
   `;
-  const input = li.querySelector("input");
+  const input = li.querySelector("textarea");
   input.addEventListener("input", () => {
+    autoResizeTextarea(input);
     updateSummary();
     queueAutoSave();
   });
+  autoResizeTextarea(input);
   return li;
 }
 
@@ -270,14 +276,21 @@ function addOption(prefill = {}) {
   wireOptionListeners(optionDiv);
   updateSummary();
   queueAutoSave();
+  autoResizeAllTextareas(optionDiv);
 }
 
 function addPoint(button, type) {
   const option = button.parentElement;
   const list = option.querySelector("." + type);
+  const lastInput = list.querySelector("li:last-child textarea");
+  if (lastInput && !lastInput.value.trim()) {
+    lastInput.focus();
+    return;
+  }
   list.appendChild(createPointLi(type));
   updateSummary();
   queueAutoSave();
+  autoResizeAllTextareas(option);
 }
 
 // -------- Persistence --------
@@ -288,10 +301,10 @@ function saveDecision(existingId = currentDecisionId) {
   const options = [...document.querySelectorAll(".option")]
     .map((opt) => ({
       title: opt.querySelector(".option-title").value.trim(),
-      pros: [...opt.querySelectorAll(".pros input")]
+      pros: [...opt.querySelectorAll(".pros textarea")]
         .map((i) => i.value.trim())
         .filter(Boolean),
-      cons: [...opt.querySelectorAll(".cons input")]
+      cons: [...opt.querySelectorAll(".cons textarea")]
         .map((i) => i.value.trim())
         .filter(Boolean),
     }))
@@ -481,9 +494,21 @@ function wireOptionListeners(optionDiv) {
 }
 
 function removeListItem(btn) {
-  btn.parentElement.remove();
+  const li = btn.parentElement;
+  const option = li.closest(".option");
+  li.remove();
+  const list = option ? option.querySelector(".pros, .cons") : null;
+  if (option) {
+    const prosEmpty = option.querySelectorAll(".pros li").length === 0;
+    const consEmpty = option.querySelectorAll(".cons li").length === 0;
+    const titleEmpty = !option.querySelector(".option-title")?.value.trim();
+    if (prosEmpty && consEmpty && titleEmpty) {
+      option.remove();
+    }
+  }
   updateSummary();
   queueAutoSave();
+  if (option) autoResizeAllTextareas(option);
 }
 
 function removeOption(btn) {
@@ -491,6 +516,7 @@ function removeOption(btn) {
   if (option) option.remove();
   updateSummary();
   queueAutoSave();
+  autoResizeAllTextareas(document);
 }
 
 function updateSummary() {
@@ -507,10 +533,10 @@ function updateSummary() {
   const options = [...document.querySelectorAll(".option")]
     .map((opt) => ({
       title: opt.querySelector(".option-title")?.value.trim(),
-      pros: [...opt.querySelectorAll(".pros input")]
+      pros: [...opt.querySelectorAll(".pros textarea")]
         .map((i) => i.value.trim())
         .filter(Boolean),
-      cons: [...opt.querySelectorAll(".cons input")]
+      cons: [...opt.querySelectorAll(".cons textarea")]
         .map((i) => i.value.trim())
         .filter(Boolean),
     }))
@@ -550,8 +576,8 @@ function updateSummary() {
     for (let i = 0; i < rows; i++) {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${escapeHtml(opt.pros[i] || "")}</td>
-        <td>${escapeHtml(opt.cons[i] || "")}</td>
+        <td><p class="cell-text">${escapeHtml(opt.pros[i] || "")}</p></td>
+        <td><p class="cell-text">${escapeHtml(opt.cons[i] || "")}</p></td>
       `;
       tbody.appendChild(tr);
     }
@@ -562,6 +588,16 @@ function updateSummary() {
 }
 
 // -------- Utilities --------
+function autoResizeTextarea(el) {
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + AUTO_RESIZE_PADDING + "px";
+}
+
+function autoResizeAllTextareas(scope = document) {
+  scope.querySelectorAll("textarea").forEach(autoResizeTextarea);
+}
+
 function updateDecisionPreview() {
   const preview = document.getElementById("decisionPreview");
   if (!preview) return;
