@@ -199,37 +199,56 @@ button:hover {
   white-space: pre-line;
 }
 
-.summary-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
+.summary-decision-title {
+  text-align: center;
+  font-size: 22px;
+  margin: 10px 0 16px;
 }
 
-.summary-table {
-  width: 100%;
-  border-collapse: collapse;
+.summary-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.summary-table th,
-.summary-table td {
-  border: 1px solid #334155;
-  padding: 10px;
-  vertical-align: top;
-}
-
-.summary-table th {
+.summary-choice {
   background: #0f172a;
-  color: #e2e8f0;
-  text-align: left;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
-.pill {
-  display: inline-block;
-  padding: 4px 8px;
-  margin: 2px;
-  background: #0ea5e9;
-  color: #0b1221;
-  border-radius: 999px;
-  font-size: 12px;
+.choice-title {
+  text-align: center;
+  margin: 4px 0 12px;
+  font-size: 18px;
+}
+
+.summary-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.summary-grid th,
+.summary-grid td {
+  width: 50%;
+  padding: 10px 12px;
+  text-align: left;
+  border: 1px solid #334155;
+}
+
+.summary-grid th {
+  background: #152338;
+  font-weight: 600;
+}
+
+.summary-grid tbody tr:hover {
+  background: #16233c;
 }
 
 @media (max-width: 720px) {

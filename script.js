@@ -360,35 +360,68 @@ function removeOption(btn) {
 }
 
 function updateSummary() {
-  const tbody = document.getElementById("summaryBody");
-  if (!tbody) return;
+  const container = document.getElementById("summaryChoices");
+  const titleEl = document.getElementById("summaryDecisionTitle");
+  if (!container || !titleEl) return;
 
-  const options = [...document.querySelectorAll(".option")].map((opt) => ({
-    title: opt.querySelector(".option-title")?.value.trim(),
-    pros: [...opt.querySelectorAll(".pros input")]
-      .map((i) => i.value.trim())
-      .filter(Boolean),
-    cons: [...opt.querySelectorAll(".cons input")]
-      .map((i) => i.value.trim())
-      .filter(Boolean),
-  }));
+  const decisionTitle =
+    document.getElementById("decision")?.value.trim() || "Decision";
+  titleEl.textContent = decisionTitle;
 
-  tbody.innerHTML = "";
+  const options = [...document.querySelectorAll(".option")]
+    .map((opt) => ({
+      title: opt.querySelector(".option-title")?.value.trim(),
+      pros: [...opt.querySelectorAll(".pros input")]
+        .map((i) => i.value.trim())
+        .filter(Boolean),
+      cons: [...opt.querySelectorAll(".cons input")]
+        .map((i) => i.value.trim())
+        .filter(Boolean),
+    }))
+    .filter((opt) => opt.title || opt.pros.length || opt.cons.length);
+
+  container.innerHTML = "";
 
   if (!options.length) {
-    tbody.innerHTML =
-      '<tr><td colspan="3" class="muted">Nothing to show yet.</td></tr>';
+    container.innerHTML = '<p class="muted">Nothing to show yet.</p>';
     return;
   }
 
   options.forEach((opt, idx) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(opt.title || `Option ${idx + 1}`)}</td>
-      <td>${formatList(opt.pros)}</td>
-      <td>${formatList(opt.cons)}</td>
+    const choice = document.createElement("div");
+    choice.className = "summary-choice";
+
+    const heading = document.createElement("h4");
+    heading.className = "choice-title";
+    heading.textContent = `Choice ${idx + 1}: ${opt.title || "Untitled"}`;
+    choice.appendChild(heading);
+
+    const table = document.createElement("table");
+    table.className = "summary-grid";
+
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Pros</th>
+          <th>Cons</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
     `;
-    tbody.appendChild(tr);
+
+    const tbody = table.querySelector("tbody");
+    const rows = Math.max(opt.pros.length, opt.cons.length, 1);
+    for (let i = 0; i < rows; i++) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHtml(opt.pros[i] || "")}</td>
+        <td>${escapeHtml(opt.cons[i] || "")}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    choice.appendChild(table);
+    container.appendChild(choice);
   });
 }
 
@@ -404,9 +437,4 @@ function escapeHtml(str) {
   return (str || "").replace(/[&<>\"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
   );
-}
-
-function formatList(arr) {
-  if (!arr || arr.length === 0) return '<span class="muted">-</span>';
-  return arr.map((i) => `<span class="pill">${escapeHtml(i)}</span>`).join(" ");
 }
