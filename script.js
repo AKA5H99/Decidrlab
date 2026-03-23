@@ -86,7 +86,7 @@ function initDecisionPage() {
   if (backBtn) backBtn.onclick = () => (window.location.href = "index.html");
 
   const addOptionBtn = document.getElementById("addOptionBtn");
-  if (addOptionBtn) addOptionBtn.onclick = () => addOption();
+  if (addOptionBtn) addOptionBtn.onclick = openNewOptionModal;
 
   const refreshSummaryBtn = document.getElementById("refreshSummaryBtn");
   if (refreshSummaryBtn) refreshSummaryBtn.onclick = updateSummary;
@@ -97,10 +97,9 @@ function initDecisionPage() {
 
   if (existing) {
     loadDecision(existing);
-  } else {
-    addOption();
   }
 
+  setupNewOptionModal();
   setupAiHandler();
   decisionInput.addEventListener("input", () => {
     updateSummary();
@@ -121,7 +120,6 @@ function loadDecision(data) {
   if (container) {
     container.innerHTML = "";
     (data.options || []).forEach((opt) => addOption(opt));
-    if ((data.options || []).length === 0) addOption();
   }
 
   updateLastSaved(data.updatedAt);
@@ -344,6 +342,61 @@ function upsertDecision(item) {
 function deleteDecision(id) {
   const list = getDecisions().filter((d) => d.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+// New Option modal --------
+function setupNewOptionModal() {
+  const modal = document.getElementById("newOptionModal");
+  if (!modal) return;
+
+  const input = document.getElementById("newOptionInput");
+  const confirm = document.getElementById("confirmNewOption");
+  const cancel = document.getElementById("cancelNewOption");
+  const error = document.getElementById("newOptionError");
+
+  const close = () => {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    error.textContent = "";
+    if (input) input.value = "";
+  };
+
+  const submit = () => {
+    const title = input.value.trim();
+    if (!title) {
+      error.textContent = "Please enter a title.";
+      input.focus();
+      return;
+    }
+    addOption({ title });
+    updateSummary();
+    queueAutoSave();
+    close();
+  };
+
+  confirm.onclick = submit;
+  cancel.onclick = close;
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (modal.classList.contains("show") && e.key === "Escape") close();
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submit();
+    }
+  });
+}
+
+function openNewOptionModal() {
+  const modal = document.getElementById("newOptionModal");
+  const input = document.getElementById("newOptionInput");
+  if (!modal || !input) return;
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+  setTimeout(() => input.focus(), 50);
 }
 
 // Delete Decision modal --------

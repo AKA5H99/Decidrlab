@@ -53,6 +53,20 @@
   </div>
 </div>
 
+<!-- New Option Modal -->
+<div id="newOptionModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal">
+    <h3>Name this option</h3>
+    <p class="muted">Add a short title so you can spot it in the summary.</p>
+    <input id="newOptionInput" type="text" placeholder="e.g. Work remotely" autocomplete="off">
+    <div class="modal-actions">
+      <button id="cancelNewOption" class="ghost">Cancel</button>
+      <button id="confirmNewOption">Add</button>
+    </div>
+    <p id="newOptionError" class="error-text" role="alert"></p>
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
