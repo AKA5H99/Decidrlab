@@ -13,6 +13,12 @@
   --shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
@@ -64,6 +70,8 @@ h1 {
 input,
 textarea {
   width: 100%;
+  max-width: 100%;
+  display: block;
   padding: 12px 14px;
   margin-top: 10px;
   background: linear-gradient(145deg, #0f172a, #0b1424);
@@ -91,6 +99,7 @@ textarea {
   border: 1px solid var(--border);
   text-align: center;
   background: linear-gradient(145deg, #0f172a, #0d1526);
+  overflow-wrap: anywhere;
 }
 
 .card-label {
@@ -121,6 +130,7 @@ textarea {
   border-radius: 20px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+  width: 100%;
 }
 
 .option-split {
@@ -128,6 +138,7 @@ textarea {
   gap: 12px;
   align-items: stretch;
   margin-top: 12px;
+  width: 100%;
 }
 
 .option-col {
@@ -213,6 +224,7 @@ textarea {
   line-height: 1.4;
   padding: 10px 12px;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -427,6 +439,7 @@ button:hover {
   word-break: break-word;
   overflow-wrap: anywhere;
   vertical-align: top;
+  box-sizing: border-box;
 }
 
 .summary-grid th {
@@ -467,10 +480,16 @@ button:hover {
   box-shadow: var(--shadow);
   padding: 18px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .modal h3 {
   margin: 0 0 8px;
+}
+
+.modal input {
+  width: 100%;
+  max-width: 100%;
 }
 
 .modal-actions {
