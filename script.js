@@ -374,7 +374,8 @@ function removeListItem(btn) {
 }
 
 function removeOption(btn) {
-  btn.parentElement.remove();
+  const option = btn.closest(".option");
+  if (option) option.remove();
   updateSummary();
 }
 
