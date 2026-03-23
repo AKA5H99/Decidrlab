@@ -1,4 +1,4 @@
-const STORAGE_KEY = "thinkclear-decisions";
+const STORAGE_KEY = "Decidrlab-decisions";
 let currentDecisionId = null;
 let autoSaveTimer = null;
 const AUTO_SAVE_DELAY = 800;
