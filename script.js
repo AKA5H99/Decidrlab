@@ -645,9 +645,11 @@ async function downloadSummaryImage() {
     alert("Download requires html2canvas. Please check your connection.");
     return;
   }
+  const decisionTitle = (document.getElementById("decision")?.value || "decision").trim() || "decision";
+  const safeName = decisionTitle.replace(/[^a-z0-9\-]+/gi, "_").slice(0, 60) || "decision";
   const canvas = await html2canvas(target, { backgroundColor: "#0a0f1c" });
   const link = document.createElement("a");
-  link.download = "decision-summary.png";
+  link.download = `${safeName}_summary.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
 }
