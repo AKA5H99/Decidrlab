@@ -103,6 +103,7 @@ function initDecisionPage() {
   setupNewOptionModal();
   setupAiHandler();
   decisionInput.addEventListener("input", () => {
+    autoResizeTextarea(decisionInput);
     updateSummary();
     queueAutoSave();
   });
@@ -114,6 +115,8 @@ function initDecisionPage() {
   });
   updateSummary();
   autoResizeTextarea(reflectionEl);
+  autoResizeTextarea(decisionInput);
+  autoResizeAllTextareas(document);
 }
 
 function loadDecision(data) {
@@ -127,6 +130,7 @@ function loadDecision(data) {
   }
 
   updateLastSaved(data.updatedAt);
+  autoResizeAllTextareas(document);
 }
 
 function updateLastSaved(ts) {
@@ -224,7 +228,7 @@ function addOption(prefill = {}) {
   optionDiv.className = "option";
 
   optionDiv.innerHTML = `
-    <input placeholder="Option title" class="option-title">
+    <textarea placeholder="Option title" class="option-title" rows="1"></textarea>
 
     <div class="option-split">
       <div class="option-col">
@@ -259,7 +263,9 @@ function addOption(prefill = {}) {
 
   container.appendChild(optionDiv);
 
-  optionDiv.querySelector(".option-title").value = prefill.title || "";
+  const titleField = optionDiv.querySelector(".option-title");
+  titleField.value = prefill.title || "";
+  autoResizeTextarea(titleField);
 
   const prosList = optionDiv.querySelector(".pros");
   (prefill.pros || []).forEach((text) =>
@@ -507,6 +513,7 @@ function setupNewDecisionModal() {
       closeModal();
     }
   });
+  input.addEventListener("input", () => autoResizeTextarea(input));
 }
 
 function openNewDecisionModal() {
@@ -515,7 +522,10 @@ function openNewDecisionModal() {
   if (!modal || !input) return;
   modal.classList.add("show");
   modal.setAttribute("aria-hidden", "false");
-  setTimeout(() => input.focus(), 50);
+  setTimeout(() => {
+    autoResizeTextarea(input);
+    input.focus();
+  }, 50);
 }
 
 // -------- Summary --------
@@ -532,11 +542,13 @@ function wireOptionListeners(optionDiv) {
     titleInput.addEventListener("input", () => {
       updateSummary();
       queueAutoSave();
+      autoResizeTextarea(titleInput);
     });
-  optionDiv.querySelectorAll("input").forEach((inp) => {
+  optionDiv.querySelectorAll("textarea").forEach((inp) => {
     inp.addEventListener("input", () => {
       updateSummary();
       queueAutoSave();
+      autoResizeTextarea(inp);
     });
   });
 }

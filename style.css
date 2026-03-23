@@ -112,6 +112,16 @@ textarea {
 
 .decision-input {
   font-size: 18px;
+  min-height: 56px;
+  resize: none;
+  overflow: hidden;
+}
+
+.option-title {
+  font-size: 16px;
+  resize: none;
+  overflow: hidden;
+  min-height: 48px;
 }
 
 .decision-display {
@@ -490,6 +500,13 @@ button:hover {
 .modal input {
   width: 100%;
   max-width: 100%;
+}
+
+.modal textarea {
+  width: 100%;
+  max-width: 100%;
+  resize: none;
+  overflow: hidden;
 }
 
 .modal-actions {
