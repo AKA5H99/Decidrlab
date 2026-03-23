@@ -14,15 +14,9 @@ function initIndexPage() {
   if (!listEl) return;
 
   const newBtn = document.getElementById("newDecisionBtn");
-  if (newBtn)
-    newBtn.onclick = () => {
-      const title = prompt("Enter a title for this decision:");
-      if (title === null) return; // user cancelled
-      const trimmed = title.trim();
-      if (!trimmed) return;
-      const id = createNewDecision(trimmed);
-      window.location.href = `decision.html?id=${encodeURIComponent(id)}`;
-    };
+  if (newBtn) newBtn.onclick = openNewDecisionModal;
+
+  setupNewDecisionModal();
 
   renderDecisionList();
 }
@@ -243,7 +237,7 @@ function addOption(prefill = {}) {
       </div>
 
       <div class="col-divider">
-        <span>•</span>
+        <span>&bull;</span>
       </div>
 
       <div class="option-col">
@@ -365,6 +359,59 @@ function createNewDecision(title) {
   };
   upsertDecision(payload);
   return payload.id;
+}
+
+// -------- New Decision modal --------
+function setupNewDecisionModal() {
+  const modal = document.getElementById("newDecisionModal");
+  if (!modal) return;
+
+  const input = document.getElementById("newDecisionInput");
+  const confirm = document.getElementById("confirmNewDecision");
+  const cancel = document.getElementById("cancelNewDecision");
+  const error = document.getElementById("newDecisionError");
+
+  const closeModal = () => {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    error.textContent = "";
+    input.value = "";
+  };
+
+  const submit = () => {
+    const title = input.value.trim();
+    if (!title) {
+      error.textContent = "Please enter a title.";
+      input.focus();
+      return;
+    }
+    const id = createNewDecision(title);
+    closeModal();
+    window.location.href = `decision.html?id=${encodeURIComponent(id)}`;
+  };
+
+  confirm.onclick = submit;
+  cancel.onclick = closeModal;
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submit();
+    } else if (e.key === "Escape") {
+      closeModal();
+    }
+  });
+}
+
+function openNewDecisionModal() {
+  const modal = document.getElementById("newDecisionModal");
+  const input = document.getElementById("newDecisionInput");
+  if (!modal || !input) return;
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+  setTimeout(() => input.focus(), 50);
 }
 
 // -------- Summary --------

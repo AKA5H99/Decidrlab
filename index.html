@@ -21,6 +21,20 @@
     <div id="decisionList" class="decision-list"></div>
     <div id="emptyState" class="empty-state">No decisions yet. Click "New Decision" to start.</div>
   </div>
+
+  <!-- New Decision Modal -->
+  <div id="newDecisionModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal">
+      <h3>Name your decision</h3>
+      <p class="muted">Give this decision a short title so you can find it later.</p>
+      <input id="newDecisionInput" type="text" placeholder="e.g. Should I change jobs?" autocomplete="off">
+      <div class="modal-actions">
+        <button id="cancelNewDecision" class="ghost">Cancel</button>
+        <button id="confirmNewDecision">Create</button>
+      </div>
+      <p id="newDecisionError" class="error-text" role="alert"></p>
+    </div>
+  </div>
 </div>
 
 <script src="script.js"></script>
