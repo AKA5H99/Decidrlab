@@ -14,7 +14,15 @@ function initIndexPage() {
   if (!listEl) return;
 
   const newBtn = document.getElementById("newDecisionBtn");
-  if (newBtn) newBtn.onclick = () => (window.location.href = "decision.html");
+  if (newBtn)
+    newBtn.onclick = () => {
+      const title = prompt("Enter a title for this decision:");
+      if (title === null) return; // user cancelled
+      const trimmed = title.trim();
+      if (!trimmed) return;
+      const id = createNewDecision(trimmed);
+      window.location.href = `decision.html?id=${encodeURIComponent(id)}`;
+    };
 
   renderDecisionList();
 }
@@ -345,6 +353,18 @@ function upsertDecision(item) {
 function deleteDecision(id) {
   const list = getDecisions().filter((d) => d.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function createNewDecision(title) {
+  const payload = {
+    id: "d-" + Date.now().toString(36),
+    title: title || "Untitled decision",
+    reflection: "",
+    options: [],
+    updatedAt: new Date().toISOString(),
+  };
+  upsertDecision(payload);
+  return payload.id;
 }
 
 // -------- Summary --------
