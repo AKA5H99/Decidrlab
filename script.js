@@ -1,4 +1,7 @@
 const STORAGE_KEY = "thinkclear-decisions";
+let currentDecisionId = null;
+let autoSaveTimer = null;
+const AUTO_SAVE_DELAY = 800;
 
 document.addEventListener("DOMContentLoaded", () => {
   initIndexPage();
@@ -78,7 +81,7 @@ function initDecisionPage() {
   if (!decisionInput) return;
 
   const params = new URLSearchParams(window.location.search);
-  let currentId = params.get("id");
+  currentDecisionId = params.get("id");
 
   const backBtn = document.getElementById("backBtn");
   if (backBtn) backBtn.onclick = () => (window.location.href = "index.html");
@@ -86,16 +89,11 @@ function initDecisionPage() {
   const addOptionBtn = document.getElementById("addOptionBtn");
   if (addOptionBtn) addOptionBtn.onclick = () => addOption();
 
-  const saveBtn = document.getElementById("saveBtn");
-  if (saveBtn) saveBtn.onclick = () => {
-    currentId = saveDecision(currentId);
-  };
-
   const refreshSummaryBtn = document.getElementById("refreshSummaryBtn");
   if (refreshSummaryBtn) refreshSummaryBtn.onclick = updateSummary;
 
-  const existing = currentId
-    ? getDecisions().find((d) => d.id === currentId)
+  const existing = currentDecisionId
+    ? getDecisions().find((d) => d.id === currentDecisionId)
     : null;
 
   if (existing) {
@@ -105,8 +103,14 @@ function initDecisionPage() {
   }
 
   setupAiHandler();
-  decisionInput.addEventListener("input", updateSummary);
-  document.getElementById("reflection").addEventListener("input", updateSummary);
+  decisionInput.addEventListener("input", () => {
+    updateSummary();
+    queueAutoSave();
+  });
+  document.getElementById("reflection").addEventListener("input", () => {
+    updateSummary();
+    queueAutoSave();
+  });
   updateSummary();
 }
 
@@ -202,7 +206,10 @@ function createPointLi(type, value = "") {
     <button type="button" onclick="removeListItem(this)">X</button>
   `;
   const input = li.querySelector("input");
-  input.addEventListener("input", updateSummary);
+  input.addEventListener("input", () => {
+    updateSummary();
+    queueAutoSave();
+  });
   return li;
 }
 
@@ -263,6 +270,7 @@ function addOption(prefill = {}) {
 
   wireOptionListeners(optionDiv);
   updateSummary();
+  queueAutoSave();
 }
 
 function addPoint(button, type) {
@@ -270,10 +278,11 @@ function addPoint(button, type) {
   const list = option.querySelector("." + type);
   list.appendChild(createPointLi(type));
   updateSummary();
+  queueAutoSave();
 }
 
 // -------- Persistence --------
-function saveDecision(existingId) {
+function saveDecision(existingId = currentDecisionId) {
   const decisionValue = document.getElementById("decision").value.trim();
   const reflectionValue = document.getElementById("reflection").value.trim();
 
@@ -310,6 +319,7 @@ function saveDecision(existingId) {
     setTimeout(() => (status.textContent = ""), 2000);
   }
 
+  currentDecisionId = payload.id;
   return payload.id;
 }
 
@@ -338,23 +348,39 @@ function deleteDecision(id) {
 }
 
 // -------- Summary --------
+function queueAutoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    saveDecision(currentDecisionId);
+  }, AUTO_SAVE_DELAY);
+}
+
 function wireOptionListeners(optionDiv) {
   const titleInput = optionDiv.querySelector(".option-title");
-  if (titleInput) titleInput.addEventListener("input", updateSummary);
+  if (titleInput)
+    titleInput.addEventListener("input", () => {
+      updateSummary();
+      queueAutoSave();
+    });
   optionDiv.querySelectorAll("input").forEach((inp) => {
-    inp.addEventListener("input", updateSummary);
+    inp.addEventListener("input", () => {
+      updateSummary();
+      queueAutoSave();
+    });
   });
 }
 
 function removeListItem(btn) {
   btn.parentElement.remove();
   updateSummary();
+  queueAutoSave();
 }
 
 function removeOption(btn) {
   const option = btn.closest(".option");
   if (option) option.remove();
   updateSummary();
+  queueAutoSave();
 }
 
 function updateSummary() {
