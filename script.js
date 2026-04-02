@@ -196,9 +196,12 @@ Analyze and suggest best option with reasoning, risks and long term thinking.
       });
 
       const data = await res.json();
-      resultDiv.innerText = data.reply;
+      if (!res.ok) {
+        throw new Error(data.error || "AI request failed");
+      }
+      resultDiv.innerText = data.reply || "(no reply)";
     } catch (err) {
-      resultDiv.innerText = "AI Error";
+      resultDiv.innerText = `AI Error: ${err.message || err}`;
     }
   };
 }
